@@ -1,4 +1,4 @@
-package com.tinkoffinvest.source;
+package com.tinkoffinvest.baseclasses;
 
 import java.math.BigDecimal;
 

@@ -1,4 +1,4 @@
-package com.tinkoffinvest.source;
+package com.tinkoffinvest.baseclasses;
 
 import ru.tinkoff.piapi.contract.v1.PostOrderResponse;
 import ru.tinkoff.piapi.contract.v1.Quotation;

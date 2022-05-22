@@ -1,3 +1,4 @@
+package com.tinkoffinvest.data;
 // package com.tinkoffinvest;
 
 // import java.lang.reflect.Type;

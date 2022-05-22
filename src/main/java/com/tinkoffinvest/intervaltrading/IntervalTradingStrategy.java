@@ -1,23 +1,30 @@
 package com.tinkoffinvest.intervaltrading;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
-import com.tinkoffinvest.source.ActiveOrdersMap;
-import com.tinkoffinvest.source.OrderInfo;
-import com.tinkoffinvest.source.StrategyConfig;
-import com.tinkoffinvest.source.TypeOperation;
+import com.tinkoffinvest.baseclasses.ActiveOrdersMap;
+import com.tinkoffinvest.baseclasses.OrderInfo;
+import com.tinkoffinvest.baseclasses.StrategyConfig;
+import com.tinkoffinvest.baseclasses.TypeOperation;
+import com.tinkoffinvest.data.MyShare;
 
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import ru.tinkoff.piapi.contract.v1.Quotation;
 
+@Getter @Setter
+@RequiredArgsConstructor
 public class IntervalTradingStrategy implements StrategyConfig {
-    private float highPrice, lowPrice;
-    private float percentageGap;
-    private float percentageProfit;
-    private float percentageLost;
-    private ActiveOrdersMap activeOrdersMap;
+    @NonNull private ActiveOrdersMap activeOrdersMap;
+    @NonNull private Map<String, MyShare> sharesInfo;
 
     @Override
     public boolean checkForOpenLong(String figi, Quotation priceQuotation) {
+        float lowPrice = sharesInfo.get(figi).getLowPrice();
+        float percentageGap = sharesInfo.get(figi).getPercentageGap();
         float minPriceOperation = Integer.MAX_VALUE;
         if (activeOrdersMap.get(figi) != null) {
             for (OrderInfo openOrder : activeOrdersMap.get(figi).values()) {
@@ -47,6 +54,8 @@ public class IntervalTradingStrategy implements StrategyConfig {
 
     @Override
     public boolean checkForCloseLong(String figi, Quotation priceQuotation) {
+        float percentageProfit = sharesInfo.get(figi).getPercentageProfit();
+        float percentageLost = sharesInfo.get(figi).getPercentageLost();
         if (activeOrdersMap.get(figi) == null) {
             return false;
         }
@@ -67,6 +76,8 @@ public class IntervalTradingStrategy implements StrategyConfig {
 
     @Override
     public boolean checkForOpenShort(String figi, Quotation priceQuotation) {
+        float highPrice = sharesInfo.get(figi).getHighPrice();
+        float percentageGap = sharesInfo.get(figi).getPercentageGap();
         float maxPriceOperation = Integer.MIN_VALUE;
         if (activeOrdersMap.get(figi) != null) {
             for (OrderInfo openOrder : activeOrdersMap.get(figi).values()) {
@@ -96,6 +107,8 @@ public class IntervalTradingStrategy implements StrategyConfig {
 
     @Override
     public boolean checkForCloseShort(String figi, Quotation priceQuotation) {
+        float percentageProfit = sharesInfo.get(figi).getPercentageProfit();
+        float percentageLost = sharesInfo.get(figi).getPercentageLost();
         if (activeOrdersMap.get(figi) == null) {
             return false;
         }

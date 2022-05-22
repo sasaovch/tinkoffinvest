@@ -1,4 +1,4 @@
-package com.tinkoffinvest;
+package com.tinkoffinvest.data;
 
 import java.util.Set;
 
@@ -12,5 +12,7 @@ import lombok.ToString;
 @ToString
 public class InfoJsonFile {
     public String token;
+    public Boolean sandboxMode;
+    public Float limitsMoney;
     public Set<MyShare> shares;
 }

@@ -1,11 +1,14 @@
-package com.tinkoffinvest.source;
+package com.tinkoffinvest.baseclasses;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
+@NoArgsConstructor
 public class ActiveOrdersMap {
 
     private Map<String, Map<String, OrderInfo>> activeOrdersMap = new HashMap<>();

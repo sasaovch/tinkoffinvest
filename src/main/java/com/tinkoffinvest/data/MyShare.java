@@ -1,4 +1,4 @@
-package com.tinkoffinvest;
+package com.tinkoffinvest.data;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +9,11 @@ import lombok.ToString;
 @Getter @Setter
 @ToString
 public class MyShare {
-    public String ticker;
+    public String figi;
     public float lowPrice;
     public float highPrice;
     public float percentageGap;
     public float percentageProfit;
     public float percentageLost;
+    public int lotOperationSize;
 }

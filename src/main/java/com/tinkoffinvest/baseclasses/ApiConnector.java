@@ -1,9 +1,8 @@
-package com.tinkoffinvest.source;
+package com.tinkoffinvest.baseclasses;
 
 import java.util.UUID;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import ru.tinkoff.piapi.contract.v1.Account;
 import ru.tinkoff.piapi.contract.v1.OrderDirection;
 import ru.tinkoff.piapi.contract.v1.OrderType;
@@ -15,25 +14,28 @@ import ru.tinkoff.piapi.core.MarketDataService;
 import ru.tinkoff.piapi.core.OrdersService;
 import ru.tinkoff.piapi.core.UsersService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Getter
-@Slf4j
 public class ApiConnector {
     private final InvestApi investApi;
     private final boolean sandboxMode;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiConnector.class);
 
     public ApiConnector(String token, boolean sandboxMode) {
         this.sandboxMode = sandboxMode;
         if (token == null || token.isBlank()){
-            log.error("Empty token. Check environment variable 'token'");
+            LOGGER.error("Empty token. Check environment variable 'token'");
             throw new IllegalArgumentException("Empty token. Check environment variable 'token'");
         }
         if (sandboxMode) {
             investApi = InvestApi.createSandbox(token);
             investApi.getSandboxService().openAccountSync();
-            log.info("Created sandbox");
+            LOGGER.info("Created sandbox");
         } else {
             investApi = InvestApi.create(token);
-            log.info("Created main account");
+            LOGGER.info("Created main account");
         }
     }
 
