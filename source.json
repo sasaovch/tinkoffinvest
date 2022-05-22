@@ -1,0 +1,20 @@
+{
+    "token" : "t.nebapFgmE6D29iX6i10EJgGnfq0LiockSgE-wHvUOpCkSrOiRWvfOEn7fVlDt5PTZRmfSNRJt2JNTvFaG5T6jw",
+    "shares" : [
+        {
+            "ticker" : "GAZP",
+            "lowPrice" : 200,
+            "highPrice" : 262,
+            "percentageGap" :0.5,
+            "percentageProfit" : 1.5,
+            "percentageLost" : 1},
+        {
+            "ticker" : "SBER",
+            "lowPrice" : 68,
+            "highPrice" : 75,
+            "percentageGap" : 0.5,
+            "percentageProfit" : 1.5,
+            "percentageLost" : 1
+        }
+    ]
+}

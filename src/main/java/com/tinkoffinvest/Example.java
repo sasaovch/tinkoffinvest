@@ -150,9 +150,9 @@ public class Example {
     //Получаем список аккаунтов и распечатываем их с указанием привилегий токена
     var accounts = api.getUserService().getAccountsSync();
     var mainAccount = accounts.get(0);
-    // for (Account account : accounts) {
-    //   log.info("account id: {}, access level: {}", account.getId(), account.getAccessLevel().name());
-    // }
+    for (Account account : accounts) {
+      log.info("account id: {}, access level: {}", account.getId(), account.getAccessLevel().name());
+    }
 
     //Получаем и печатаем информацию о текущих лимитах пользователя
     var tariff = api.getUserService().getUserTariffSync();

@@ -3,7 +3,8 @@ package com.tinkoffinvest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import com.tinkoffinvest.source.ApiConnector;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class ContextProvider {
               int lot = share.getLot();
               MoneyValue nominal = share.getNominal();
             for (Dividend dividend : dividends) {
-              log.info("Nominal {},{} lot {}, figi {}", nominal.getUnits(), nominal.getNano(), lot, figi);
+              log.info("Nominal {},{} lot {}, figi {}, dividends {}", nominal.getUnits(), nominal.getNano(), lot, figi, dividend);
             }
           }
       
@@ -81,16 +82,4 @@ public class ContextProvider {
         log.info("последняя цена по инструменту {}, цена: {}, время обновления цены: {}", figi, price, time);
         }
     }
-
-    // public MarketInstrumentList getBonds() throws Exception {
-    //     return getOpenApi().getMarketContext().getMarketBonds().join();
-    // }
-
-    // public MarketInstrumentList getEtfs() throws Exception {
-    //     return getOpenApi().getMarketContext().getMarketEtfs().join();
-    // }
-
-    // public MarketInstrumentList getCurrencies() throws Exception {
-    //     return getOpenApi().getMarketContext().getMarketCurrencies().join();
-    // }
 }
