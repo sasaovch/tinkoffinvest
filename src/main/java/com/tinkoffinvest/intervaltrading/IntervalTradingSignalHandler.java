@@ -26,7 +26,6 @@ public class IntervalTradingSignalHandler implements SignalHandler {
     private Float cashBalance = 0F;
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImp.class);
 
-
     @Override
     public void handle(Quotation priceQuotation, StrategyConfig config, String figi) {
         LOGGER.info("In handle");

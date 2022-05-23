@@ -4,29 +4,36 @@ import java.math.BigDecimal;
 
 import com.google.protobuf.Timestamp;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import ru.tinkoff.piapi.contract.v1.Candle;
 import ru.tinkoff.piapi.contract.v1.HistoricCandle;
 import ru.tinkoff.piapi.contract.v1.Quotation;
 import ru.tinkoff.piapi.core.utils.MapperUtils;
 
+@EqualsAndHashCode(of = {"timestamp"})
 @Getter
 public class CandleInfo {
-    private final BigDecimal openPrice;
-    private final BigDecimal closePrice;
+
+    private final BigDecimal open;
+    private final BigDecimal close;
+    private final BigDecimal low;
+    private final BigDecimal high;
     private final Timestamp timestamp;
 
-    private CandleInfo(Quotation closePrice, Quotation openPrice, Timestamp timestamp, BigDecimal lot) {
-        this.openPrice = MapperUtils.quotationToBigDecimal(openPrice).multiply(lot);
-        this.closePrice = MapperUtils.quotationToBigDecimal(closePrice).multiply(lot);
+    private CandleInfo(Timestamp timestamp, Quotation openPrice, Quotation closePrice, Quotation lowPrice, Quotation highPrice) {
+        this.open = MapperUtils.quotationToBigDecimal(openPrice);
+        this.low = MapperUtils.quotationToBigDecimal(lowPrice);
+        this.high = MapperUtils.quotationToBigDecimal(highPrice);
+        this.close = MapperUtils.quotationToBigDecimal(closePrice);
         this.timestamp = timestamp;
     }
 
-    public static CandleInfo ofHistoricCandle(HistoricCandle candle, BigDecimal lot) {
-        return new CandleInfo(candle.getClose(), candle.getOpen(), candle.getTime(), lot);
+    public static CandleInfo ofHistoricCandle(HistoricCandle candle) {
+        return new CandleInfo(candle.getTime(), candle.getOpen(), candle.getClose(), candle.getLow(), candle.getHigh());
     }
 
-    public static CandleInfo ofStreamCandle(Candle candle, BigDecimal lot) {
-        return new CandleInfo(candle.getClose(), candle.getOpen(), candle.getTime(), lot);
+    public static CandleInfo ofStreamCandle(Candle candle) {
+        return new CandleInfo(candle.getTime(), candle.getOpen(), candle.getClose(), candle.getLow(), candle.getHigh());
     }
 }

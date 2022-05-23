@@ -13,30 +13,34 @@ import com.tinkoffinvest.intervaltrading.IntervalTradingStrategy;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.tinkoff.piapi.contract.v1.LastPrice;
 import ru.tinkoff.piapi.contract.v1.TradingDay;
 import ru.tinkoff.piapi.core.utils.DateUtils;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RequiredArgsConstructor
+@Slf4j
 public class TradingBot extends AbstractTradingBot {
     @NonNull private ApiConnector apiConnector;
     @NonNull private IntervalTradingSignalHandler signalHandler;
     @NonNull private IntervalTradingStrategy strategyConfig;
+    @NonNull private String exchange;
     private boolean isWorking = true;
     private Scanner scanner = new Scanner(System.in);
-    private static final Logger LOGGER = LoggerFactory.getLogger(TradingBot.class);
 
 
     public void start() {
         while (isWorking) {
-            LOGGER.info("TradingBot started");
+            log.info("TradingBot started");
             checkTime();
             List<LastPrice> lastPriceList = apiConnector.getMarketDataService().getLastPricesSync(strategyConfig.getSharesInfo().keySet());
-            lastPriceList.stream().forEach(s -> signalHandler.handle(s.getPrice(), strategyConfig, s.getFigi()));
+            lastPriceList.stream().forEach(s -> {
+                System.out.println(s.getFigi() + " " + s.getPrice());
+                System.out.println(s);
+                signalHandler.handle(s.getPrice(), strategyConfig, s.getFigi());
+            });
             checkInput();
         }
     }
@@ -47,32 +51,34 @@ public class TradingBot extends AbstractTradingBot {
             if (System.in.available() > 0) {
                 String line = scanner.nextLine();
                 if ("exit".equals(line)) {
-                    LOGGER.info("TradingBot finished working.");
+                    log.info("TradingBot finished working.");
                     isWorking = false;
+                }
+                if ("print_porfolio".equals(line)) {
+                    printPorfolio();
                 }
             }
         } catch (IOException | NoSuchElementException e) {
-            LOGGER.info("TradingBot finished working.");
+            log.info("TradingBot finished working.");
             isWorking = false;
         }
     }
 
-    public void checkTime() {
-        // TODO think how to set exchange
+    public void checkTime() { 
         long now = System.currentTimeMillis();
         var tradingSchedules =
-        apiConnector.getInstrumentsService().getTradingScheduleSync("moex", Instant.now(), Instant.now());
+        apiConnector.getInstrumentsService().getTradingScheduleSync(exchange, Instant.now(), Instant.now());
         for (TradingDay tradingDay : tradingSchedules.getDaysList()) {
             var date = DateUtils.timestampToString(tradingDay.getDate());
             var startDate = DateUtils.timestampToString(tradingDay.getStartTime());
             var endDate = DateUtils.timestampToString(tradingDay.getEndTime());
             if (tradingDay.getIsTradingDay()) {
-                LOGGER.info("shedule of working SPB. Date:{},  opem: {}, close: {}", date, startDate, endDate);
+                log.info("Shedule of working {}. Date:{},  opem: {}, close: {}, current: {}", exchange, date, startDate, endDate, Instant.now());
                 if ((tradingDay.getStartTime().getSeconds() - now / 1000 > 0) || (tradingDay.getEndTime().getSeconds() - now / 1000 < 0)) {
-                    LOGGER.info("Exchange of MOEX is not working now");
+                    log.info("Exchange of {} is not working now", exchange);
                 }
             } else {
-            LOGGER.info("Today is non trading day");
+            log.info("Today is non trading day");
             isWorking = false;
             }
         }
@@ -82,18 +88,18 @@ public class TradingBot extends AbstractTradingBot {
         var portfolio = apiConnector.getInvestApi().getOperationsService().getPortfolioSync(
                 apiConnector.getUserService().getAccountsSync().get(0).getId());
         var totalAmountShares = portfolio.getTotalAmountShares();
-        LOGGER.info("общая стоимость акций в портфеле {}", totalAmountShares);
+        log.info("Total value of shares in the portfolio {}", totalAmountShares);
         var positions = portfolio.getPositions();
-        LOGGER.info("в портфолио {} позиций", positions.size());
+        log.info("In protfolio {} positions", positions.size());
         for (int i = 0; i < Math.min(positions.size(), 5); i++) {
             var position = positions.get(i);
             var figi = position.getFigi();
             var quantity = position.getQuantity();
             var currentPrice = position.getCurrentPrice();
             var expectedYield = position.getExpectedYield();
-            LOGGER.info(
-                "позиция с figi: {}, количество инструмента: {}, текущая цена инструмента: {}, текущая расчитанная " +
-                "доходность: {}",
+            log.info(
+                "Position by figi: {}, tool quantity: {}, current price of the instrument: {}, current calculated " +
+                "profitability: {}",
                 figi, quantity, currentPrice, expectedYield);
         }
     }

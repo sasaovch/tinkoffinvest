@@ -26,10 +26,6 @@ public class App {
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
-        // TODO Think about Stop-order
-        // TODO Think about print portfolio
-        // TODO Think about how to work with different instruments
-        // TODO Think about list of candles of instrument
         try {
             Gson gson = new GsonBuilder().create();
             File file = new File("source.json");
@@ -47,10 +43,12 @@ public class App {
             IntervalTradingSignalHandler signalHandler = new IntervalTradingSignalHandler(info.getLimitsMoney(), apiConnector, orderService);
             Map<String, MyShare> sharesInfo = new HashMap<>();
             for (MyShare share : info.getShares()) {
+
+                System.out.println(share.getFigi());
                 sharesInfo.put(share.getFigi(), share);
             }
             IntervalTradingStrategy config = new IntervalTradingStrategy(activeOrdersMap, sharesInfo);
-            TradingBot bot = new TradingBot(apiConnector, signalHandler, config);
+            TradingBot bot = new TradingBot(apiConnector, signalHandler, config, info.getExchange());
             bot.start();
         } catch (IOException e) {
             LOGGER.error(e.getMessage(), e);

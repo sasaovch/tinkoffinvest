@@ -11,6 +11,7 @@ import lombok.ToString;
 @Getter @Setter
 @ToString
 public class InfoJsonFile {
+    public String exchange;
     public String token;
     public Boolean sandboxMode;
     public Float limitsMoney;

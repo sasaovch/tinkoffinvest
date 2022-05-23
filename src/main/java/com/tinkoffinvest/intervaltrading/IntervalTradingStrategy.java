@@ -1,6 +1,5 @@
 package com.tinkoffinvest.intervaltrading;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 import com.tinkoffinvest.baseclasses.ActiveOrdersMap;
@@ -14,6 +13,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import ru.tinkoff.piapi.contract.v1.Quotation;
+import ru.tinkoff.piapi.core.utils.MapperUtils;
 
 @Getter @Setter
 @RequiredArgsConstructor
@@ -28,13 +28,13 @@ public class IntervalTradingStrategy implements StrategyConfig {
         float minPriceOperation = Integer.MAX_VALUE;
         if (activeOrdersMap.get(figi) != null) {
             for (OrderInfo openOrder : activeOrdersMap.get(figi).values()) {
-                float priceOrder = quotationToBigDecimal(openOrder.getPriceOperation()).floatValue();
+                float priceOrder = MapperUtils.quotationToBigDecimal(openOrder.getPriceOperation()).floatValue();
                 if (priceOrder < minPriceOperation) {
                     minPriceOperation = priceOrder;
                 }
             }
         }
-        float checkPrice = quotationToBigDecimal(priceQuotation).floatValue();
+        float checkPrice = MapperUtils.quotationToBigDecimal(priceQuotation).floatValue();
         float gap;
         if (minPriceOperation < checkPrice) {
             return false;
@@ -59,10 +59,10 @@ public class IntervalTradingStrategy implements StrategyConfig {
         if (activeOrdersMap.get(figi) == null) {
             return false;
         }
-        float checkPrice = quotationToBigDecimal(priceQuotation).floatValue();
+        float checkPrice = MapperUtils.quotationToBigDecimal(priceQuotation).floatValue();
         for (OrderInfo openOrder : activeOrdersMap.get(figi).values()) {
             if (openOrder.getTypeOrder() == TypeOperation.LONG) {
-                float priceOrder = quotationToBigDecimal(openOrder.getPriceOperation()).floatValue();
+                float priceOrder = MapperUtils.quotationToBigDecimal(openOrder.getPriceOperation()).floatValue();
                 if (priceOrder / checkPrice - 1 >= percentageProfit) {
                     return true;
                 }
@@ -81,13 +81,13 @@ public class IntervalTradingStrategy implements StrategyConfig {
         float maxPriceOperation = Integer.MIN_VALUE;
         if (activeOrdersMap.get(figi) != null) {
             for (OrderInfo openOrder : activeOrdersMap.get(figi).values()) {
-                float priceOrder = quotationToBigDecimal(openOrder.getPriceOperation()).floatValue();
+                float priceOrder = MapperUtils.quotationToBigDecimal(openOrder.getPriceOperation()).floatValue();
                 if (priceOrder > maxPriceOperation) {
                     maxPriceOperation = priceOrder;
                 }
             }
         }
-        float checkPrice = quotationToBigDecimal(priceQuotation).floatValue();
+        float checkPrice = MapperUtils.quotationToBigDecimal(priceQuotation).floatValue();
         float gap;
         if (maxPriceOperation > checkPrice) {
             return false;
@@ -112,10 +112,10 @@ public class IntervalTradingStrategy implements StrategyConfig {
         if (activeOrdersMap.get(figi) == null) {
             return false;
         }
-        float checkPrice = quotationToBigDecimal(priceQuotation).floatValue();
+        float checkPrice = MapperUtils.quotationToBigDecimal(priceQuotation).floatValue();
         for (OrderInfo openOrder : activeOrdersMap.get(figi).values()) {
             if (openOrder.getTypeOrder() == TypeOperation.SHORT) {
-                float priceOrder = quotationToBigDecimal(openOrder.getPriceOperation()).floatValue();
+                float priceOrder = MapperUtils.quotationToBigDecimal(openOrder.getPriceOperation()).floatValue();
                 if (priceOrder / checkPrice - 1 >= percentageProfit) {
                     return true;
                 }
@@ -126,17 +126,4 @@ public class IntervalTradingStrategy implements StrategyConfig {
         }
         return false;
     }
-    public static BigDecimal quotationToBigDecimal(Quotation value) {
-        if (value == null) {
-          return null;
-        }
-        return mapUnitsAndNanos(value.getUnits(), value.getNano());
-    }
-
-    public static BigDecimal mapUnitsAndNanos(long units, int nanos) {
-        if (units == 0 && nanos == 0) {
-          return BigDecimal.ZERO;
-        }
-        return BigDecimal.valueOf(units).add(BigDecimal.valueOf(nanos, 9));
-      }
 }
